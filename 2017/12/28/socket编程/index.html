@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="千代在 Github 上的个人博客">
+    <meta name="keyword" content="">
+    <meta name="theme-color" content="#600090">
+    <meta name="msapplication-navbutton-color" content="#600090">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#600090">
+    <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-128.png">
+    <link rel="alternate" type="application/atom+xml" title="Schrödinger&#39;s Cat" href="/atom.xml">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.css">
+    <title>
+        
+        socket编程｜qiandaibaobao
+        
+    </title>
+
+    <link rel="canonical" href="http://haojen.github.io/2017/12/28/socket编程/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/blog-style.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+</head>
+
+<style>
+
+    header.intro-header {
+        background-image: url('//o7bkkhiex.bkt.clouddn.com/lion-blur-bg.jpg')
+    }
+</style>
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="" class="animated fadeIn">
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top " id="nav-top" data-ispost = "true" data-istags="false
+" data-ishome = "false" >
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand animated pulse" href="/">
+                <span class="brand-logo">
+                    Schrödinger&#39;s Cat
+                </span>
+                <!--'s Blog-->
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <!-- /.navbar-collapse -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+					
+                    
+                        
+							
+                        <li>
+                            <a href="/about/">about me</a>
+                        </li>
+							
+						
+                    
+					
+					
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+//    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+<!-- Main Content -->
+
+<!--only post-->
+
+
+<img class="wechat-title-img"
+     src="">
+
+
+<style>
+    
+    header.intro-header {
+        background-image: url('')
+    }
+
+    
+</style>
+
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <div class="post-heading">
+                    <h1>socket编程</h1>
+                    
+                    <span class="meta">
+                         作者 qiandai
+                        <span>
+                          日期 2017-12-28
+                         </span>
+                    </span>
+                    <div class="tags text-center">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="post-title-haojen">
+        <span>
+            socket编程
+        </span>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Container -->
+            <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
+                <h1 id="Unix-Socket编程套路"><a href="#Unix-Socket编程套路" class="headerlink" title="Unix Socket编程套路"></a>Unix Socket编程套路</h1><h2 id="服务端步骤-回射服务器的例子"><a href="#服务端步骤-回射服务器的例子" class="headerlink" title="服务端步骤(回射服务器的例子)"></a>服务端步骤(回射服务器的例子)</h2><p>  <code>socket()</code> -&gt; <code>bind()</code> -&gt; <code>listen()</code> -&gt; <code>accept()</code> -&gt; <code>read()</code> -&gt; <code>write()</code> -&gt; <code>read()</code> -&gt; <code>close()</code></p>
+<h2 id="客户端步骤-回射客户端的例子"><a href="#客户端步骤-回射客户端的例子" class="headerlink" title="客户端步骤(回射客户端的例子)"></a>客户端步骤(回射客户端的例子)</h2><p>  <code>socket()</code> -&gt; <code>connect()</code> -&gt; <code>write()</code> -&gt; <code>read()</code> -&gt; <code>close()</code>  </p>
+<h2 id="常用函数解释"><a href="#常用函数解释" class="headerlink" title="常用函数解释"></a>常用函数解释</h2><ul>
+<li><code>int socket(int domain, int type, int protocol)</code> 三个参数<ul>
+<li>第一个参数表示使用的地址，一般是ipv4: AF_INET</li>
+<li>第二个参数表示socket类型，tcp: SOCK_STREAM</li>
+<li>第三个参数设置为0</li>
+</ul>
+</li>
+<li><code>int bind(int sockfd, const struct sockaddr * serverAddr, socklen_t length)</code> 三个参数<ul>
+<li>第一个参数是socket</li>
+<li>第二个参数是服务端地址，这个参数需要强转成(struct sockaddr *)类型</li>
+<li>第三个参数是服务端地址长度</li>
+</ul>
+</li>
+<li><code>int listen(int sockfd, int backlog)</code><ul>
+<li>第一个参数是socket</li>
+<li>第二个参数是backlog, <a href="http://man7.org/linux/man-pages/man2/listen.2.html" target="_blank" rel="noopener">关于backlog的解释</a></li>
+</ul>
+</li>
+<li><code>int accept(int sockfd, struct sockaddr * sockAddr, socklen_t * sockAddrLen)</code><ul>
+<li>第一个参数是服务端socket描述符</li>
+<li>第二个参数是传出参数，accept返回时传出客户端的地址和端口号</li>
+<li>第三个参数是传入-传出参数，传入的是服务端提供的clientAddr缓冲区的大小，传出的是客户端地址结构的实际长度</li>
+<li>出错返回-1</li>
+</ul>
+</li>
+<li><code>ssize_t recv(int sockfd, const void *buff, size_t nbytes, int flags)</code><ul>
+<li>第一个参数是客户端socket描述符</li>
+<li>第二个参数是接收缓冲区</li>
+<li>第三个参数是接收数据的长度??存疑</li>
+<li>第四个参数一般设置为0</li>
+</ul>
+</li>
+<li><code>ssize_t    send(int sockfd, const void * buff, size_t nbytes, int flags)</code><ul>
+<li>第一个参数是客户端socket描述符</li>
+<li>第二个参数是发送缓冲区</li>
+<li>第三个参数是发送数据的长度??存疑</li>
+<li>第四个参数一般设置为0</li>
+</ul>
+</li>
+</ul>
+<h2 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h2><ul>
+<li>服务端程序<code>server.c</code></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netdb.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SERVER_PORT 5555</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> serverSocket, clientSocket;<span class="comment">//声明服务端和客户端socket</span></span><br><span class="line"></span><br><span class="line">  serverSocket = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);<span class="comment">//调用socket，获得服务端socket</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">//异常检测</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(serverSocket &lt; <span class="number">0</span>)&#123;</span><br><span class="line">    perror(<span class="string">"server socket error"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">serverAddr</span>;</span><span class="comment">//声明服务端地址结构</span></span><br><span class="line">  bzero(&amp;serverAddr, <span class="keyword">sizeof</span>(serverAddr));<span class="comment">//服务端地址结构填充</span></span><br><span class="line">  serverAddr.sin_family = AF_INET;<span class="comment">//设置地址类型</span></span><br><span class="line">  serverAddr.sin_port = htons(SERVER_PORT);<span class="comment">//设置地址端口,将端口转换成网络字节序</span></span><br><span class="line">  serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);<span class="comment">//INADDR_ANY代表0.0.0.0,转换成网络字节序</span></span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">clientAddr</span>;</span><span class="comment">//声明客户端地址结构</span></span><br><span class="line">  <span class="keyword">int</span> clientAddrLen = <span class="keyword">sizeof</span>(clientAddr);<span class="comment">//客户端地址长度</span></span><br><span class="line">  <span class="keyword">char</span> buffer[<span class="number">200</span>];<span class="comment">//读取数据用的缓冲区</span></span><br><span class="line">  <span class="keyword">int</span> dataSize;<span class="comment">//客户端返回的字节数</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">//调用bind,第二个参数要强转成(struct sockaddr \*)类型</span></span><br><span class="line">  <span class="keyword">int</span> checkBind = bind(serverSocket, (struct sockaddr \*)&amp;serverAddr, <span class="keyword">sizeof</span>(serverAddr));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(checkBind &lt; <span class="number">0</span>)&#123;</span><br><span class="line">    perror(<span class="string">"server bind error"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">int</span> checkListen = listen(serverSocket, <span class="number">5</span>);<span class="comment">//第二个参数是backlog，一般设置到30以下</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(checkListen &lt; <span class="number">0</span>)&#123;</span><br><span class="line">    perror(<span class="string">"server listen error"</span>);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//开始主循环，接收客户端请求并处理请求</span></span><br><span class="line">  <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Listening on port: %d\n"</span>, SERVER_PORT);</span><br><span class="line">    <span class="comment">//调用accept函数，进程进入阻塞状态</span></span><br><span class="line">    <span class="comment">//accept返回客户端socket的文件描述符</span></span><br><span class="line">    <span class="comment">//clientAddr是传出参数，accept返回时传出客户端的地址和端口号</span></span><br><span class="line">    <span class="comment">//clientAddrLen是传入-传出参数，传入的是服务端提供的clientAddr缓冲区的大小，传出的是客户端地址结构的实际长度</span></span><br><span class="line">    <span class="comment">//出错返回-1</span></span><br><span class="line">    clientSocket = accept(serverSocket, (struct sockaddr \*)&amp;clientAddr, (<span class="keyword">socklen_t</span>*)&amp;clientAddrLen);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(clientSocket &lt; <span class="number">0</span>)&#123;</span><br><span class="line">      perror(<span class="string">"server accept error"</span>);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//打印出客户端的ip和端口</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"client ip: %s\n"</span>, inet_ntoa(clientAddr.sin_addr));</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"client port: %d\n"</span>, htons(clientAddr.sin_port));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//开始读取客户端数据...</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">      dataSize = recv(clientSocket, buffer, <span class="number">1024</span>, <span class="number">0</span>);</span><br><span class="line">      <span class="keyword">if</span>(dataSize &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        perror(<span class="string">"server recv error"</span>);</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">      &#125;<span class="keyword">else</span> <span class="keyword">if</span>(dataSize == <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="comment">//read返回0， 可关闭连接</span></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"dataSize大小：(%d)\n"</span>, dataSize);</span><br><span class="line">      buffer[dataSize] = <span class="string">'\0'</span>;<span class="comment">//设置缓冲区结尾为\0</span></span><br><span class="line">      <span class="comment">//如果客户端发送(quit\r\n)，结束传输数据，跳出循环</span></span><br><span class="line">      <span class="keyword">if</span>(<span class="built_in">strcmp</span>(buffer, <span class="string">"quit\r\n"</span>) == <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;<span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">strcmp</span>(buffer, <span class="string">"quit"</span> == <span class="number">0</span>))&#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"%d data received, data is: (%s)\n"</span>, dataSize, buffer);</span><br><span class="line">      <span class="comment">//把收到的数据发给客户端</span></span><br><span class="line">      send(clientSocket, buffer, dataSize, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+                <hr>
+                
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2017/12/22/20171222/" data-toggle="tooltip" data-placement="top"
+                           title="fork()函数">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+
+                
+
+
+                <!--加入新的评论系统-->
+                
+            </div>
+
+            <div class="hidden-xs col-sm-3 toc-col">
+                <div class="toc-wrap">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Unix-Socket编程套路"><span class="toc-text"><a href="#Unix-Socket&#x7F16;&#x7A0B;&#x5957;&#x8DEF;" class="headerlink" title="Unix Socket&#x7F16;&#x7A0B;&#x5957;&#x8DEF;"></a>Unix Socket&#x7F16;&#x7A0B;&#x5957;&#x8DEF;</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#服务端步骤-回射服务器的例子"><span class="toc-text"><a href="#&#x670D;&#x52A1;&#x7AEF;&#x6B65;&#x9AA4;-&#x56DE;&#x5C04;&#x670D;&#x52A1;&#x5668;&#x7684;&#x4F8B;&#x5B50;" class="headerlink" title="&#x670D;&#x52A1;&#x7AEF;&#x6B65;&#x9AA4;(&#x56DE;&#x5C04;&#x670D;&#x52A1;&#x5668;&#x7684;&#x4F8B;&#x5B50;)"></a>&#x670D;&#x52A1;&#x7AEF;&#x6B65;&#x9AA4;(&#x56DE;&#x5C04;&#x670D;&#x52A1;&#x5668;&#x7684;&#x4F8B;&#x5B50;)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#客户端步骤-回射客户端的例子"><span class="toc-text"><a href="#&#x5BA2;&#x6237;&#x7AEF;&#x6B65;&#x9AA4;-&#x56DE;&#x5C04;&#x5BA2;&#x6237;&#x7AEF;&#x7684;&#x4F8B;&#x5B50;" class="headerlink" title="&#x5BA2;&#x6237;&#x7AEF;&#x6B65;&#x9AA4;(&#x56DE;&#x5C04;&#x5BA2;&#x6237;&#x7AEF;&#x7684;&#x4F8B;&#x5B50;)"></a>&#x5BA2;&#x6237;&#x7AEF;&#x6B65;&#x9AA4;(&#x56DE;&#x5C04;&#x5BA2;&#x6237;&#x7AEF;&#x7684;&#x4F8B;&#x5B50;)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用函数解释"><span class="toc-text"><a href="#&#x5E38;&#x7528;&#x51FD;&#x6570;&#x89E3;&#x91CA;" class="headerlink" title="&#x5E38;&#x7528;&#x51FD;&#x6570;&#x89E3;&#x91CA;"></a>&#x5E38;&#x7528;&#x51FD;&#x6570;&#x89E3;&#x91CA;</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码示例"><span class="toc-text"><a href="#&#x4EE3;&#x7801;&#x793A;&#x4F8B;" class="headerlink" title="&#x4EE3;&#x7801;&#x793A;&#x4F8B;"></a>&#x4EE3;&#x7801;&#x793A;&#x4F8B;</span></a></li></ol></li></ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5 class="text-center">
+                        <a href="/tags/">FEATURED TAGS</a>
+                    </h5>
+                    <div class="tags">
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- Footer -->
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                <br>
+                <ul class="list-inline text-center">
+                
+                
+                    <li>
+                        <a target="_blank" href="https://twitter.com/chriszh013">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/qiandaibaobao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/5636106908">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.facebook.com/qiandaibaobao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/chris-zh">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Schrödinger&#39;s Cat 2017
+                    <br>
+                    <span id="busuanzi_container_site_pv" style="font-size: 12px;">PV: <span id="busuanzi_value_site_pv"></span> Times</span>
+                    <br>
+                    Theme by <a href="https://haojen.github.io/">Haojen Ma</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/blog.js"></script>
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://haojen.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!--wechat title img-->
+<img class="wechat-title-img" src="http://oolt2fu8k.bkt.clouddn.com/p5%E5%A4%B4%E5%83%8F.jpg">
+</body>
+
+</html>
